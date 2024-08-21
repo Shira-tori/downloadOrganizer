@@ -1,10 +1,9 @@
 #!/bin/python3
 import os
 import platform
+import time
 
-# make it so that it can be ran anywhere in the system and still
-# find the downloads folders
-# should be cross platform
+# make the script resource friendly
 
 class Organizer:
     files = []
@@ -34,16 +33,29 @@ class Organizer:
 
     def __init__(self):
         try:
-            self.files = os.listdir()
+            if platform.system() == 'Linux':
+                downloads_folder = os.path.expanduser("~/Downloads")
+                self.files = os.listdir(downloads_folder)
+                os.chdir(downloads_folder)
+            elif platform.system() == 'Windows':
+                downloads_folder = os.path.join(
+                        os.environ['USERPORFILE'], 'Downloads')
+                self.files = os.listdir(downloads_folder)
+                os.chdir(downloads_folder)
+
         except:
             print("Can't find Downloads folder")
             exit()
+
         for i in self.folders:
             self.checkDirExist(i, self.files)
 
+        if self.files.sort() == self.folders.sort():
+            print('Skipping...')
+            return
+
         for i in self.files:
             self.checkFileType(i)
-
 
     def checkDirExist(self, i: str, files: list) -> None:
         if i not in files:
@@ -59,6 +71,7 @@ class Organizer:
             return
 
         extension = f'.{extension}'
+        print(f'Moving {i}')
         if extension in self.imgs:
             os.rename(f'./{i}', f'./imgs/{i}')
         elif extension in self.videos:
@@ -79,4 +92,6 @@ class Organizer:
             os.rename(f'./{i}', f'./else/{i}')
 
 if __name__ == '__main__':
-    Organizer()
+    while True:
+        Organizer()
+        time.sleep(1)
