@@ -50,7 +50,7 @@ class Organizer:
         for i in self.folders:
             self.checkDirExist(i, self.files)
 
-        if self.files.sort() == self.folders.sort():
+        if len(self.files) == len(self.folders):
             print('Skipping...')
             return
 
